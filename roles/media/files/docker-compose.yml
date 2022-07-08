@@ -1,0 +1,136 @@
+version: '3.3'
+services:
+  sonarr:
+    image: hotio/sonarr
+    container_name: sonarr
+    volumes:
+      - "{{ data_dir }}/media/config/sonarr:/config"
+      - "{{ storage_dir }}/media/downloads:/downloads"
+      - "{{ storage_dir }}/media/tv:/tv"
+    environment:
+      - PUID="{{ docker_user.id }}"
+      - PGID="{{ media.gid }}"
+      - UMASK=002
+      - TZ="{{ TZ }}"
+    ports: 
+      - 8989:8989
+    restart: unless-stopped
+  radarr:
+    image: hotio/radarr
+    container_name: radarr
+    volumes:
+      - "{{ data_dir }}/media/config/radarr:/config"
+      - "{{ storage_dir }}/media/downloads:/downloads"
+      - "{{ storage_dir }}/media/movies:/movies"
+    environment:
+      - PUID="{{ docker_user.id }}"
+      - PGID="{{ media.gid }}"
+      - UMASK=002
+      - TZ="{{ TZ }}"
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+  prowlarr:
+    image: hotio/prowlarr:nightly
+    container_name: prowlarr
+    volumes:
+      - ./config/prowlarr:/config
+    environment:
+      - PUID="{{ docker_user.id }}"
+      - PGID="{{ media.gid }}"
+      - UMASK=002
+      - TZ="{{ TZ }}"
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+  readarr: 
+     image: hotio/readarr:nightly
+     container_name: readarr
+     environment:
+       - PUID="{{ docker_user.id }}"
+       - PGID="{{ media.gid }}"
+       - UMASK=022
+       - TZ="{{ TZ }}"
+     volumes: 
+       - "{{ data_dir }}/media/config/readarr:/config"
+       - "{{ storage_dir }}/media/books:/books"
+       - "{{ storage_dir }}/media/downloads:/downloads"
+     ports: 
+       - 8787:8787
+     restart: unless-stopped
+  calibre:
+    image: ghcr.io/linuxserver/calibre
+    container_name: calibre
+    environment: 
+      - PUID="{{ docker_user.id }}"
+      - PGID="{{ media.gid }}"
+      - TZ="{{ TZ }}"
+    volumes:
+      - "{{ data_dir }}/media/config/calibre:/config"
+      - "{{ storage_dir }}/ebooks:/books"
+    ports: 
+      - 6817:8080 # guacamole GUI
+      - 6818:8081 # webserver
+    restart: unless-stopped
+  vpn:
+    image: ghcr.io/linuxserver/wireguard
+    container_name: vpn
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID="{{ docker_user.id }}"
+      - PGID="{{ media.gid }}"
+      - TZ="{{ TZ }}"
+    ports:
+      - "{{ qbittorrent.port }}:{{ qbittorrent.port }}" # this is to funnel qbittorrent through mullvad, it's corrct
+    volumes:
+      - "{{ data_dir }}/media/config/wireguard:/config"
+      - /lib/modules:/lib/modules
+    restart: unless-stopped
+  qbittorrent:
+    image: ghcr.io/linuxserver/qbittorrent
+    container_name: qbittorrent
+    environment:
+      - PUID="{{ docker_user.id }}"
+      - PGID="{{ media.gid }}"
+      - TZ="{{ TZ }}"
+      - WEBUI_PORT="{{ qbittorrent.port }}"
+    volumes:
+      - "{{ data_dir }}/media/config/qbittorrent:/config"
+      - "{{ storage_dir }}/media/downloads:/downloads"
+    network_mode: "service:vpn"
+    depends_on:
+      - vpn
+    restart: always
+  plex:
+    image: hotio/plex
+    container_name: plex
+    volumes:
+       - "{{ data_dir }}/media/config/plex:/config"
+       - "{{ storage_dir }}/media/tv:/data/tv"
+       - "{{ storage_dir }}/media/movies:/data/movies"
+       - "{{ storage_dir }}/media/music:/data/music"
+       - ./rclone/mounts:/data/rclone:slave
+       - /dev/shm:/transcode
+    networks:
+       - proxy
+    restart: always
+    environment:
+      - PLEX_CLAIM={{ plex.claim }} # make sure to not wrap this, breaks it
+      - PUID={{ docker_user.id }}
+      - PGID={{ media.gid }}
+      - UMASK=002
+      - PLEX_PASS="yes"
+      - ADVERTISE_IP=https://{{ plex.domain }}
+    hostname: https://{{ plex.domain }}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=proxy"
+      - "traefik.http.routers.plex.rule=Host(`{{ plex.domain }}`)"
+      - "traefik.http.routers.plex.entrypoints=websecure"
+      - "traefik.http.routers.plex.tls.certresolver=letsencrypt"
+      - "traefik.http.services.plex.loadbalancer.server.port={{ plex.port }}" 
+networks:
+  proxy:
+   external: true

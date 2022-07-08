@@ -1,0 +1,10 @@
+http:
+  middlewares:
+    compress:
+      compress: {}
+
+    # https://paramdeo.com/blog/opting-your-website-out-of-googles-floc-network, thanks Orange!
+    floc-block:
+      headers:
+        customResponseHeaders:
+          Permissions-Policy: interest-cohort=()

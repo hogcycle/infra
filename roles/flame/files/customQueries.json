@@ -1,0 +1,1 @@
+{"queries":[{"name":"Newegg","prefix":"ne","template":"https://www.newegg.com/p/pl?d="},{"name":"Amazon","prefix":"a","template":"https://www.amazon.com/s?k="},{"name":"Dictionary","prefix":"dict","template":"https://www.merriam-webster.com/dictionary/"}]}

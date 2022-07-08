@@ -1,0 +1,22 @@
+- name: Creating install directory for clipface
+  file: 
+    path: "{{ data_dir }}/clipface"
+    state: directory
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+    mode:  "{{ docker_compose_dir_mask }}"
+  become: true
+
+- name: Installing clipface compose file
+  template:
+    src: files/docker-compose.yml
+    dest: "{{ data_dir }}/clipface/docker-compose.yml"
+    mode: "{{ docker_compose_file_mask }}"
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+ 
+- name: Deploying clipface
+  docker_compose:
+    project_src: "{{ data_dir }}/clipface/"
+    files:
+    - docker-compose.yml

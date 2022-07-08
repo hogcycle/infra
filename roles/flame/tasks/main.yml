@@ -1,0 +1,35 @@
+- name: Create install directory for flame
+  file:
+    path: "{{ data_dir }}/flame"
+    state: directory
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+    mode: "{{ docker_compose_dir_mask }}"
+  become: true
+
+- name: Install compose file for flame
+  template:
+    src: files/docker-compose.yml
+    dest: "{{ data_dir }}/flame/docker-compose.yml"
+    mode: "{{ docker_compose_file_mask }}"
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+  become: true
+
+- name: Copy over everything else for Flame
+  copy:
+    src: "{{ item }}"
+    dest: "{{ data_dir }}/flame"
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+  with_items:
+   - config.json
+   - customQueries.json
+   - db.sqlite
+   - flame.css
+
+- name: Deploying Flame
+  docker_compose:
+    project_src: "{{ data_dir }}/flame/"
+    files: 
+      - docker-compose.yml

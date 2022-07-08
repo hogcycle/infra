@@ -1,0 +1,30 @@
+- name: Creating install directory for media stack
+  file: 
+    path: "{{ data_dir }}/media"
+    state: directory
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+    mode:  "{{ docker_compose_dir_mask }}"
+  become: true
+
+- name: Installing media stack compose file
+  template:
+    src: files/docker-compose.yml
+    dest: "{{ data_dir }}/media/docker-compose.yml"
+    mode: "{{ docker_compose_file_mask }}"
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+ 
+- name: Deploying Media Stack
+  docker_compose:
+    project_src: "{{ data_dir }}/media/"
+    files:
+    - docker-compose.yml
+
+- name: Setting proper permissions for media files
+  file:
+    state: directory
+    recurse: true
+    path: "{{ storage_dir }}/media"
+    owner: "{{ docker_user.gid }}"
+    group: "{{ media.gid }}"

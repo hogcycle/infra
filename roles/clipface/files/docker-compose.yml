@@ -1,0 +1,20 @@
+version: '3.3'
+services:
+  clipface:
+    image: tomsan/clipface:latest
+    container_name: clippy
+    volumes: 
+      - "{{ zfs_dir }}/fuse/clips/finished:/clips"
+    restart: unless-stopped
+    networks:
+      - proxy
+    environment:
+      - CLIPFACE_USER_PASSWORD={{ clipface.password }}
+      - CLIPFACE_CLIPS_PAGE_TITLE=gaming funnies :D
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.clipface.rule=Host(`{{ clipface.domain }}`)"
+      - "traefik.http.routers.clipface.entrypoints=websecure"
+networks:
+  proxy:
+    external: true

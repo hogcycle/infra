@@ -1,0 +1,5 @@
+--- 
+ - hosts: arx
+   become: true
+   roles:
+     - psitransfer

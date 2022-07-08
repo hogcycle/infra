@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  psitransfer:
+    image:  psitrax/psitransfer
+    container_name: send
+    environment:
+      - PSITRANSFER_ADMIN_PASS={{ send.pass }}
+      - PSITRANSFER_UPLOAD_DIR={{ data_dir }}/psitransfer/files
+      - PSITRANSFER_UPLOAD_PASS={{ send.pass }}
+    volumes:
+      - {{ data_dir }}/psitransfer/data:/data
+    labels: 
+      - "traefik.enable=true"
+      - "traefik.http.routers.psitransfer.rule=Host(`{{ send.domain }}`)"
+      - "traefik.http.routers.psitransfer.entrypoints=websecure"
+      - "traefik.http.services.psitransfer.loadbalancer.server.port={{ send.port }}"
+    networks:
+      - proxy
+    restart: unless-stopped
+networks:
+  proxy:
+    external: true
