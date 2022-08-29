@@ -1,0 +1,11 @@
+- name: Install required (and not so required) packages
+  package:
+    name: "{{ item }}"
+  become: true
+  loop:
+    - vim
+    - htop
+    - neofetch 
+    - git
+    - sudo
+    - net-tools
