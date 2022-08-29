@@ -1,0 +1,13 @@
+- name: Make my user
+  user:
+    name: "{{ user }}"
+    home: "{{ home }}"
+    shell: /bin/bash
+    system: true
+  become: true
+
+- name: Gimme sudo
+  lineinfile:
+    path: /etc/sudoers
+    line: "{{ user }} ALL=(ALL) ALL"
+  become: true 
