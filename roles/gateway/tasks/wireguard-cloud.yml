@@ -1,0 +1,39 @@
+- name: Install wireguard tools
+  package:
+    name: "{{ item }}"
+  become: true
+  loop:
+    - wireguard-tools
+    - qrencode
+
+- name: Wireguard server config
+  template:
+    src: files/wireguard-server.conf
+    dest: /etc/wireguard/wg0.conf
+    mode: "0600"
+    backup: true
+  become: true
+  register: wireguard_conf
+
+- name: Enable wireguard
+  service:
+    name: wg-quick@wg0
+    enabled: true
+  become: true
+
+- name: Restart wireguard
+  service:
+    name: wg-quick@wg0
+    state: restarted
+  when: wireguard_conf.changed
+  become: true
+
+- name: Enable p2p communication
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "1"
+    sysctl_set: true
+    state: present
+    reload: true
+    sysctl_file: /etc/sysctl.d/99-sysctl.conf
+  become: true
