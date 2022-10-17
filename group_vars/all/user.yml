@@ -1,3 +1,0 @@
-user: nate
-home: /home/{{ user }}
-

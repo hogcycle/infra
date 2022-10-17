@@ -1,0 +1,14 @@
+wireguard:
+  public_ip: 107.173.166.114 
+  port: 51820
+  cidr: 10.1.10.0/24
+  server:
+    ip: 10.1.10.1
+    public_key: "{{ wireguard_gateway_server_public_key }}"
+    private_key: "{{ wireguard_gateway_server_private_key }}"
+  arx:
+    ip: 10.1.10.2
+    public_key: "{{ wireguard_gateway_arx_public_key }}"
+    private_key: "{{ wireguard_gateway_arx_private_key }}"
+  
+  

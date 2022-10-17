@@ -1,0 +1,10 @@
+- name: Installing packages
+  include_tasks: packages.yml
+
+- name: Creating user
+  include_tasks: users.yml
+
+- name: Setting up SSH
+  include_tasks: ssh.yml
+
+

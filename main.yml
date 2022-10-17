@@ -1,5 +1,7 @@
---- 
- - hosts: arx
-   become: true
-   roles:
-     - psitransfer
+---
+
+- hosts: all
+  become: true
+  roles:
+    - base
+    - gateway

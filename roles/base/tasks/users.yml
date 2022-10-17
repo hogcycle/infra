@@ -4,6 +4,8 @@
     home: "{{ home }}"
     shell: /bin/bash
     system: true
+    password: "{{ nubes.password }}"
+    groups: "sudo"
   become: true
 
 - name: Gimme sudo
