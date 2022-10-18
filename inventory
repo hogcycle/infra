@@ -1,1 +1,5 @@
+[arx]
+192.168.1.140 ansible_ssh_user=nate
+
+[nubes]
 107.173.166.114
