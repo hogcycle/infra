@@ -1,0 +1,2 @@
+- name: WireGuard Client
+  include_tasks: wireguard-client.yml

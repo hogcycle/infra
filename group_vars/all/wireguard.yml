@@ -1,0 +1,13 @@
+wireguard:
+  public_ip: "{{ vault_wireguard_server_public_ip }}" 
+  port: 51820
+  cidr: 10.1.10.0/24
+  server:
+    ip: 10.1.10.1
+    public_key: "{{ vault_wireguard_server_public_key }}"
+    private_key: "{{ vault_wireguard_server_private_key }}"
+  clients:
+    arx:
+      ip: 10.1.10.2
+      public_key: "{{ vault_wireguard_arx_public_key }}"
+      private_key: "{{ vault_wireguard_arx_private_key }}"

@@ -7,7 +7,7 @@
   template:
     src: files/haproxy.cfg
     dest: /etc/haproxy/haproxy.cfg
-    validate: haproxy -f /etc/haproxy/haproxy.cfg -c
+    validate: haproxy -f %s -c -q
     mode: "0644"
   become: true
   register: haproxy_config
@@ -21,7 +21,7 @@
 - name: Restart haproxy
   service:
     name: haproxy
-    status: restarted
+    state: restarted
   become: true
   when: haproxy_config.changed
 

@@ -6,9 +6,17 @@
     - wireguard-tools
     - qrencode
 
+- name: Make wireguard directory
+  file:
+    state: directory
+    path: /etc/wireguard
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: Wireguard server config
   template:
-    src: files/wireguard-server.conf
+    src: files/wg0-VPS.conf
     dest: /etc/wireguard/wg0.conf
     mode: "0600"
     backup: true

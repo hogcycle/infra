@@ -1,5 +1,3 @@
-[arx]
-192.168.1.140 ansible_ssh_user=nate
+arx ansible_ssh_user=nate ansible_become_pass=
 
-[nubes]
-107.173.166.114
+nubes ansible_ssh_user=root ansible_become_pass=nubesroot

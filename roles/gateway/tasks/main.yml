@@ -1,0 +1,7 @@
+- name: WireGuard setup 
+  include_tasks: wireguard-cloud.yml
+
+- name: HAProxy setup 
+  include_tasks: haproxy.yml
+
+
