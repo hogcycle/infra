@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+  pastebin:
+    image: mkaczanowski/pastebin:latest
+    container_name: pastebin
+    volumes:
+      - ./pastebin:/var/lib/pastebin
+    restart: unless-stopped
+    command: --address 0.0.0.0 --port 8081 --uri ${URI} --db=/var/lib/pastebin/
+    ports:
+      - "{{ pastebin.port }}:8084"
+    networks: 
+      - proxy
+    volumes:
+      - ./db:/var/lib/pastebin/
+  labels: 
+    - "traefik.enable=true"
+    - "traefik.http.routers.pastebin.rule=Host(`{{ pastebin.domain }}`)"
+    - "traefik.http.routers.pastebin.entrypoints=websecure"
+    - "traefik.http.services.pastebin.server.port={{ pastebin.port }}"
+networks:
+  proxy:
+    external: true

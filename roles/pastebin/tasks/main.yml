@@ -1,0 +1,23 @@
+- name: Create install directory for pastebin
+  file:
+    path: "{{ data_dir }}/pastebin"
+    state: directory
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+    mode: "{{ docker_compose_dir_mask }}"
+  become: true
+
+- name: Install compose file for pastebin
+  template:
+    src: files/docker-compose.yml
+    dest: "{{ data_dir }}/pastebin/docker-compose.yml"
+    mode: "{{ docker_compose_file_mask }}"
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+  become: true
+
+- name: Deploying pastebin 
+  docker_compose:
+    project_src: "{{ data_dir }}/pastebin/"
+    files: 
+      - docker-compose.yml
