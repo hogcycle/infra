@@ -1,0 +1,23 @@
+- name: Create install directory for scrutiny
+  file:
+    path: "{{ data_dir }}/scrutiny"
+    state: directory
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+    mode: "{{ docker_compose_dir_mask }}"
+  become: true
+
+- name: Install compose file for scrutiny
+  template:
+    src: files/docker-compose.yml
+    dest: "{{ data_dir }}/scrutiny/docker-compose.yml"
+    mode: "{{ docker_compose_file_mask }}"
+    owner: "{{ docker_user.name }}"
+    group: "{{ docker_user.group }}"
+  become: true
+
+- name: Deploying scrutiny 
+  docker_compose:
+    project_src: "{{ data_dir }}/scrutiny/"
+    files: 
+      - docker-compose.yml
