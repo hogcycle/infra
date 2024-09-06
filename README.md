@@ -1,3 +1,5 @@
+# antiquated - moved to nix
+
 # infra
 various instructions for Ansible to manage my homelab. trying my hardest to not push keys to master.
 
